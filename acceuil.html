@@ -6,35 +6,35 @@
 <style>
   /* ====== Reset & base ====== */
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial',sans-serif; }
-  body { background: #0a0a0a; color: #fff; overflow-x:hidden; }
+  body { background: #111; color: #fff; overflow-x:hidden; }
   a { text-decoration: none; color: inherit; }
 
   /* ====== Fond animé ====== */
   body::before {
     content:""; position:fixed; top:0; left:0; width:100%; height:100%;
-    background: radial-gradient(circle at 50% 50%, #0ff 0%, transparent 70%);
-    animation: pulseBg 6s infinite alternate;
+    background: radial-gradient(circle at center, #0ff 0%, transparent 70%);
+    animation: pulseBg 8s infinite alternate;
     z-index:-2;
   }
   .stars {
     position:fixed; top:0; left:0; width:100%; height:100%;
     background: url('https://i.ibb.co/gZM6f0C/stars.png') repeat;
-    animation: moveStars 200s linear infinite;
+    animation: moveStars 300s linear infinite;
     z-index:-3;
+    opacity: 0.6;
   }
   @keyframes moveStars { from{background-position:0 0;} to{background-position:-10000px 5000px;} }
-  @keyframes pulseBg { 0%{opacity:0.4;}100%{opacity:1;} }
+  @keyframes pulseBg { 0%{opacity:0.3;}100%{opacity:0.7;} }
 
   /* ====== Header ====== */
   header {
     width:100%; display:flex; justify-content:space-between; align-items:center;
-    padding:15px 50px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-    position:fixed; top:0; left:0; z-index:10;
-    border-bottom: 1px solid #00ffe0;
+    padding:15px 50px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+    position:fixed; top:0; left:0; z-index:10; border-bottom: 1px solid #0ff;
   }
-  header h1 { font-size:28px; color:#00ffe0; text-shadow: 0 0 10px #0ff, 0 0 20px #0099ff; }
+  header h1 { font-size:30px; color:#0ff; text-shadow: 0 0 8px #0ff, 0 0 15px #09f; }
   nav a { margin-left:30px; font-size:16px; font-weight:bold; color:#0ff; transition: 0.3s; }
-  nav a:hover { color:#00ffe0; text-shadow: 0 0 10px #0ff; }
+  nav a:hover { color:#0ff; text-shadow: 0 0 8px #0ff, 0 0 15px #09f; }
 
   /* ====== Container principal ====== */
   .container { max-width:1200px; margin:120px auto 50px; padding:0 20px; }
@@ -42,40 +42,42 @@
   /* ====== Stats ====== */
   .stats { display:flex; justify-content:space-around; flex-wrap:wrap; margin-bottom:50px; }
   .stat-card {
-    background: rgba(0,0,0,0.6); border:1px solid #00ffe0; border-radius:12px;
-    padding:20px; width:220px; margin:10px; text-align:center;
-    box-shadow: 0 0 10px #00ffe0;
+    background: rgba(15,15,15,0.8); border-radius:15px;
+    padding:25px; width:240px; margin:10px; text-align:center;
+    box-shadow: 0 0 20px rgba(0,255,255,0.4);
     transition: transform 0.3s, box-shadow 0.3s;
   }
-  .stat-card:hover { transform: translateY(-5px); box-shadow: 0 0 20px #0ff; }
-  .stat-card h2 { font-size:42px; color:#0ff; margin-bottom:10px; }
-  .stat-card p { font-size:16px; color:#00ffe0; }
+  .stat-card:hover { transform: translateY(-7px); box-shadow: 0 0 30px rgba(0,255,255,0.6); }
+  .stat-card h2 { font-size:48px; color:#0ff; margin-bottom:10px; }
+  .stat-card p { font-size:16px; color:#09f; }
 
   /* ====== Musique ====== */
   .music { margin-bottom:50px; }
-  .music h2 { color:#00ffe0; margin-bottom:20px; text-shadow: 0 0 10px #0ff; }
+  .music h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
   .track {
-    display:flex; justify-content:space-between; margin-bottom:10px;
-    background: rgba(0,0,0,0.4); padding:10px 20px; border-radius:8px;
-    border-left: 4px solid #0ff; transition:0.3s;
+    display:flex; justify-content:space-between; margin-bottom:12px;
+    background: rgba(20,20,20,0.7); padding:12px 20px; border-radius:10px;
+    border-left:5px solid #0ff; transition:0.3s;
   }
   .track:hover { background: rgba(0,255,255,0.1); }
 
   /* ====== Avis ====== */
   .reviews { margin-bottom:50px; }
-  .reviews h2 { color:#00ffe0; margin-bottom:20px; text-shadow: 0 0 10px #0ff; }
+  .reviews h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
   .review {
-    background: rgba(0,0,0,0.4); padding:15px; border-radius:8px;
-    margin-bottom:10px; display:flex; justify-content:space-between;
+    background: rgba(20,20,20,0.7); padding:15px; border-radius:12px;
+    margin-bottom:12px; display:flex; justify-content:space-between; box-shadow: 0 0 10px #0ff;
+    transition: 0.3s;
   }
+  .review:hover { box-shadow: 0 0 20px #09f; }
   .stars-review { color:#0ff; }
   .review-text { max-width:70%; }
 
   /* ====== Commandes ====== */
-  .commands h2 { color:#00ffe0; margin-bottom:20px; text-shadow:0 0 10px #0ff; }
+  .commands h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
   .cmd-card {
-    background: rgba(0,0,0,0.6); border-left:4px solid #0ff; padding:15px;
-    margin-bottom:10px; border-radius:8px; transition:0.3s; cursor:pointer;
+    background: rgba(15,15,15,0.8); border-left:5px solid #0ff;
+    padding:15px; margin-bottom:12px; border-radius:12px; transition:0.3s; cursor:pointer;
   }
   .cmd-card:hover { background: rgba(0,255,255,0.1); transform:translateX(5px); }
 
@@ -145,7 +147,7 @@
 <script>
 async function fetchStats() {
   try {
-    const res = await fetch("http://fi5.bot-hosting.net:22324/stats"); // L'API Flask de ton bot
+    const res = await fetch("http://fi5.bot-hosting.net:22324/stats");
     const data = await res.json();
 
     document.getElementById("servers").textContent = data.servers;
@@ -160,7 +162,6 @@ async function fetchStats() {
   }
 }
 
-// Appeler toutes les 5 secondes pour stats temps réel
 fetchStats();
 setInterval(fetchStats, 5000);
 </script>
