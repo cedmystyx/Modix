@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Bot Discord</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #7289da;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input {
+            width: 250px;
+        }
+
+        button {
+            background-color: #7289da;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5b6eae;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Panel Bot Discord</h1>
+        <input type="text" id="channel" placeholder="ID du canal Discord">
+        <input type="text" id="message" placeholder="Message à envoyer">
+        <button onclick="sendCommand()">Envoyer</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        async function sendCommand() {
+            const channel_id = document.getElementById('channel').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const statusDiv = document.getElementById('status');
+
+            if (!channel_id || !message) {
+                statusDiv.textContent = "⚠️ Veuillez remplir tous les champs.";
+                return;
+            }
+
+            const data = { channel_id, message };
+
+            try {
+                const response = await fetch("https://TON_DOMAINE_BOTHOSTING:5000/command", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "T0nC13Cl3S3cR3t1234567890" 
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.status === "ok") {
+                    statusDiv.textContent = "✅ Message envoyé avec succès !";
+                } else if (result.status === "forbidden") {
+                    statusDiv.textContent = "❌ Clé API incorrecte !";
+                } else {
+                    statusDiv.textContent = "❌ Une erreur est survenue.";
+                }
+
+            } catch (error) {
+                statusDiv.textContent = "❌ Impossible de joindre le bot : " + error;
+            }
+        }
+    </script>
+</body>
+</html>
