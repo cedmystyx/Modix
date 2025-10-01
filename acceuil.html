@@ -143,30 +143,26 @@
 </div>
 
 <script>
-  // ====== Animation temps réel ======
-  function animateValue(id, start, end, duration) {
-    let obj = document.getElementById(id);
-    let range = end - start;
-    let current = start;
-    let increment = end > start ? 1 : -1;
-    let stepTime = Math.abs(Math.floor(duration / range));
-    let timer = setInterval(function() {
-      current += increment;
-      obj.textContent = current;
-      if (current == end) clearInterval(timer);
-    }, stepTime);
+async function fetchStats() {
+  try {
+    const res = await fetch("http://fi5.bot-hosting.net:22324/stats"); // L'API Flask de ton bot
+    const data = await res.json();
+
+    document.getElementById("servers").textContent = data.servers;
+    document.getElementById("users").textContent = data.users;
+    document.getElementById("cmds").textContent = data.commands_used;
+
+    document.getElementById("track1").textContent = data.top_tracks.track1 + " plays";
+    document.getElementById("track2").textContent = data.top_tracks.track2 + " plays";
+    document.getElementById("track3").textContent = data.top_tracks.track3 + " plays";
+  } catch (err) {
+    console.error("Erreur fetch stats :", err);
   }
+}
 
-  // Simuler données temps réel
-  setTimeout(()=> {
-    animateValue("servers", 0, 128, 1500);
-    animateValue("users", 0, 4521, 1500);
-    animateValue("cmds", 0, 8764, 1500);
-
-    document.getElementById("track1").textContent = "4521 plays";
-    document.getElementById("track2").textContent = "3210 plays";
-    document.getElementById("track3").textContent = "2890 plays";
-  }, 500);
+// Appeler toutes les 5 secondes pour stats temps réel
+fetchStats();
+setInterval(fetchStats, 5000);
 </script>
 
 </body>
