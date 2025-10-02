@@ -2,39 +2,36 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modix - Accueil</title>
 <style>
   /* ====== Reset & base ====== */
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Arial',sans-serif; }
-  body { background: #111; color: #fff; overflow-x:hidden; }
-  a { text-decoration: none; color: inherit; }
+  body { background:#111; color:#fff; overflow-x:hidden; line-height:1.5; }
+  a { text-decoration:none; color:inherit; }
 
-  /* ====== Fond animé ====== */
+  /* ====== Fond animé (particules stars) ====== */
   body::before {
     content:""; position:fixed; top:0; left:0; width:100%; height:100%;
     background: radial-gradient(circle at center, #0ff 0%, transparent 70%);
-    animation: pulseBg 8s infinite alternate;
+    animation:pulseBg 8s infinite alternate;
     z-index:-2;
   }
-  .stars {
+  canvas#stars {
     position:fixed; top:0; left:0; width:100%; height:100%;
-    background: url('https://i.ibb.co/gZM6f0C/stars.png') repeat;
-    animation: moveStars 300s linear infinite;
     z-index:-3;
-    opacity: 0.6;
   }
-  @keyframes moveStars { from{background-position:0 0;} to{background-position:-10000px 5000px;} }
-  @keyframes pulseBg { 0%{opacity:0.3;}100%{opacity:0.7;} }
+  @keyframes pulseBg { 0%{opacity:0.3;} 100%{opacity:0.7;} }
 
   /* ====== Header ====== */
   header {
     width:100%; display:flex; justify-content:space-between; align-items:center;
-    padding:15px 50px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
-    position:fixed; top:0; left:0; z-index:10; border-bottom: 1px solid #0ff;
+    padding:15px 50px; background:rgba(0,0,0,0.7); backdrop-filter:blur(12px);
+    position:fixed; top:0; left:0; z-index:10; border-bottom:1px solid #0ff;
   }
-  header h1 { font-size:30px; color:#0ff; text-shadow: 0 0 8px #0ff, 0 0 15px #09f; }
-  nav a { margin-left:30px; font-size:16px; font-weight:bold; color:#0ff; transition: 0.3s; }
-  nav a:hover { color:#0ff; text-shadow: 0 0 8px #0ff, 0 0 15px #09f; }
+  header h1 { font-size:30px; color:#0ff; text-shadow:0 0 8px #0ff, 0 0 15px #09f; }
+  nav a { margin-left:30px; font-size:16px; font-weight:bold; color:#0ff; transition:0.3s; }
+  nav a:hover { color:#fff; text-shadow:0 0 10px #0ff; }
 
   /* ====== Container principal ====== */
   .container { max-width:1200px; margin:120px auto 50px; padding:0 20px; }
@@ -42,12 +39,12 @@
   /* ====== Stats ====== */
   .stats { display:flex; justify-content:space-around; flex-wrap:wrap; margin-bottom:50px; }
   .stat-card {
-    background: rgba(15,15,15,0.8); border-radius:15px;
+    background:rgba(15,15,15,0.8); border-radius:15px;
     padding:25px; width:240px; margin:10px; text-align:center;
-    box-shadow: 0 0 20px rgba(0,255,255,0.4);
-    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow:0 0 20px rgba(0,255,255,0.4);
+    transition:transform 0.3s, box-shadow 0.3s;
   }
-  .stat-card:hover { transform: translateY(-7px); box-shadow: 0 0 30px rgba(0,255,255,0.6); }
+  .stat-card:hover { transform:translateY(-7px); box-shadow:0 0 30px rgba(0,255,255,0.6); }
   .stat-card h2 { font-size:48px; color:#0ff; margin-bottom:10px; }
   .stat-card p { font-size:16px; color:#09f; }
 
@@ -56,51 +53,72 @@
   .music h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
   .track {
     display:flex; justify-content:space-between; margin-bottom:12px;
-    background: rgba(20,20,20,0.7); padding:12px 20px; border-radius:10px;
+    background:rgba(20,20,20,0.7); padding:12px 20px; border-radius:10px;
     border-left:5px solid #0ff; transition:0.3s;
   }
-  .track:hover { background: rgba(0,255,255,0.1); }
+  .track:hover { background:rgba(0,255,255,0.1); }
 
   /* ====== Avis ====== */
   .reviews { margin-bottom:50px; }
   .reviews h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
   .review {
-    background: rgba(20,20,20,0.7); padding:15px; border-radius:12px;
-    margin-bottom:12px; display:flex; justify-content:space-between; box-shadow: 0 0 10px #0ff;
-    transition: 0.3s;
+    background:rgba(20,20,20,0.7); padding:15px; border-radius:12px;
+    margin-bottom:12px; display:flex; justify-content:space-between; box-shadow:0 0 10px #0ff;
+    transition:0.3s;
   }
-  .review:hover { box-shadow: 0 0 20px #09f; }
+  .review:hover { box-shadow:0 0 20px #09f; }
   .stars-review { color:#0ff; }
   .review-text { max-width:70%; }
 
   /* ====== Commandes ====== */
   .commands h2 { color:#0ff; margin-bottom:20px; text-shadow:0 0 8px #0ff; }
-  .cmd-card {
-    background: rgba(15,15,15,0.8); border-left:5px solid #0ff;
-    padding:15px; margin-bottom:12px; border-radius:12px; transition:0.3s; cursor:pointer;
+  details.cmd-card {
+    background:rgba(15,15,15,0.8); border-left:5px solid #0ff;
+    padding:15px; margin-bottom:12px; border-radius:12px; transition:0.3s;
   }
-  .cmd-card:hover { background: rgba(0,255,255,0.1); transform:translateX(5px); }
+  details.cmd-card summary { cursor:pointer; font-weight:bold; }
+  details.cmd-card:hover { background:rgba(0,255,255,0.1); }
 
   /* ====== Status ====== */
   .status {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(0,255,255,0.1);
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 1px solid #0ff;
-    font-size: 12px;
-    color: #0ff;
+    position:fixed; bottom:20px; right:20px;
+    background:rgba(0,255,255,0.1);
+    padding:10px 20px;
+    border-radius:10px;
+    border:1px solid #0ff;
+    font-size:12px; color:#0ff;
+    display:flex; align-items:center; gap:8px;
   }
-  .status.error { border-color: #f00; color: #f00; background: rgba(255,0,0,0.1); }
-  .status.success { border-color: #0f0; color: #0f0; background: rgba(0,255,0,0.1); }
+  .spinner {
+    border:3px solid rgba(0,255,255,0.3);
+    border-top:3px solid #0ff;
+    border-radius:50%; width:14px; height:14px;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin { 100% { transform:rotate(360deg); } }
+  .status.error { border-color:#f00; color:#f00; background:rgba(255,0,0,0.1); }
+  .status.success { border-color:#0f0; color:#0f0; background:rgba(0,255,0,0.1); }
 
+  /* ====== Footer ====== */
+  footer {
+    text-align:center; padding:20px; margin-top:40px;
+    background:rgba(0,0,0,0.6); border-top:1px solid #0ff;
+    color:#0ff; font-size:14px;
+  }
+
+  /* ====== Responsive ====== */
+  @media(max-width:768px){
+    header { flex-direction:column; gap:10px; padding:15px; }
+    nav a { margin:0 10px; font-size:14px; }
+    .stat-card { width:100%; }
+    .track, .review { flex-direction:column; align-items:flex-start; }
+    .review-text { max-width:100%; }
+  }
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<canvas id="stars"></canvas>
 
 <header>
   <h1>Modix</h1>
@@ -145,83 +163,108 @@
   <!-- ====== Commandes ====== -->
   <section id="commands" class="commands">
     <h2>Liste des Commandes</h2>
-    <div class="cmd-card">/play - Jouer une musique</div>
-    <div class="cmd-card">/stop - Stop la musique</div>
-    <div class="cmd-card">/ban - Bannir un utilisateur</div>
-    <div class="cmd-card">/kick - Expulser un utilisateur</div>
-    <div class="cmd-card">/stats - Affiche les stats du bot</div>
-    <div class="cmd-card">/help - Affiche toutes les commandes</div>
+    <details class="cmd-card"><summary>/play</summary><p>Jouer une musique</p></details>
+    <details class="cmd-card"><summary>/stop</summary><p>Stop la musique</p></details>
+    <details class="cmd-card"><summary>/ban</summary><p>Bannir un utilisateur</p></details>
+    <details class="cmd-card"><summary>/kick</summary><p>Expulser un utilisateur</p></details>
+    <details class="cmd-card"><summary>/stats</summary><p>Affiche les stats du bot</p></details>
+    <details class="cmd-card"><summary>/help</summary><p>Affiche toutes les commandes</p></details>
   </section>
 
 </div>
 
 <!-- Status de connexion -->
-<div class="status" id="status">⏳ Connexion...</div>
+<div class="status" id="status"><div class="spinner"></div>⏳ Connexion...</div>
+
+<footer>
+  <p>© 2025 Modix - Propulsé avec ❤️ par la communauté</p>
+</footer>
 
 <script>
-// Configuration
+// Config API
 const API_URL = "http://fi5.bot-hosting.net:22324/stats";
-const UPDATE_INTERVAL = 5000; // 5 secondes
+const UPDATE_INTERVAL = 5000; 
 
-// Fonction pour récupérer les stats
+// Stars animation
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+let stars = [];
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+for (let i = 0; i < 150; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2,
+    dx: (Math.random() - 0.5) * 0.3,
+    dy: (Math.random() - 0.5) * 0.3
+  });
+}
+function drawStars() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#0ff";
+  stars.forEach(s => {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+    s.x += s.dx; s.y += s.dy;
+    if(s.x<0||s.x>canvas.width) s.dx*=-1;
+    if(s.y<0||s.y>canvas.height) s.dy*=-1;
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// Fetch Stats
 async function fetchStats() {
   const statusEl = document.getElementById("status");
   
   try {
     const res = await fetch(API_URL);
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     
     const data = await res.json();
+    animateValue("servers", parseInt(document.getElementById("servers").textContent), data.servers || 0, 1000);
+    animateValue("users", parseInt(document.getElementById("users").textContent), data.users || 0, 1000);
 
-    // Mise à jour des stats principales
-    document.getElementById("servers").textContent = data.servers || 0;
-    document.getElementById("users").textContent = data.users || 0;
-
-    // Mise à jour des top tracks
     if (data.top_tracks) {
       document.getElementById("track1").textContent = (data.top_tracks.track1 || 0) + " plays";
       document.getElementById("track2").textContent = (data.top_tracks.track2 || 0) + " plays";
       document.getElementById("track3").textContent = (data.top_tracks.track3 || 0) + " plays";
     }
 
-    // Status succès
-    statusEl.textContent = "✓ Connecté";
+    statusEl.innerHTML = "✅ Connecté";
     statusEl.className = "status success";
     
   } catch (err) {
-    console.error("Erreur lors de la récupération des stats :", err);
-    
-    // Status erreur
-    statusEl.textContent = "✗ Erreur de connexion";
+    console.error("Erreur :", err);
+    statusEl.innerHTML = "✗ Erreur de connexion";
     statusEl.className = "status error";
   }
+  setTimeout(fetchStats, UPDATE_INTERVAL);
 }
 
-// Lancement initial
-fetchStats();
-
-// Mise à jour automatique
-setInterval(fetchStats, UPDATE_INTERVAL);
-
-// Animation des nombres (effet compteur)
+// Animate numbers
 function animateValue(id, start, end, duration) {
   const obj = document.getElementById(id);
   const range = end - start;
+  if (range === 0) return;
+  let current = start;
   const increment = end > start ? 1 : -1;
   const stepTime = Math.abs(Math.floor(duration / range));
-  let current = start;
-  
   const timer = setInterval(() => {
     current += increment;
     obj.textContent = current;
-    if (current === end) {
-      clearInterval(timer);
-    }
+    if (current === end) clearInterval(timer);
   }, stepTime);
 }
+
+// Start
+fetchStats();
 </script>
 
 </body>
