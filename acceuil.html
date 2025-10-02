@@ -1,289 +1,241 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Modix - Dashboard Amélioré</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Modix - Dashboard Immersif</title>
 <style>
-/* ====== Reset & Base ====== */
-* { box-sizing:border-box; margin:0; padding:0; font-family:Inter,Arial,Helvetica,sans-serif; }
-body { background:#0b0b0d; color:#e6ffff; min-height:100vh; overflow-x:hidden; }
-a { color:inherit; text-decoration:none; }
+/* Reset & base */
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif;}
+body{background:#0b0b0d;color:#e6ffff;min-height:100vh;overflow-x:hidden;scroll-behavior:smooth;}
+a{text-decoration:none;color:inherit;}
 
-/* Canvas stars */
-canvas#stars { position:fixed; inset:0; z-index:-2; }
+/* Canvas background */
+canvas#stars{position:fixed;inset:0;z-index:-2;}
 
-/* Header */
-header {
-  position:fixed; inset-inline:0; top:0; display:flex; align-items:center; justify-content:space-between;
-  padding:14px 22px; background:rgba(0,0,0,0.45); backdrop-filter: blur(8px);
-  border-bottom:1px solid rgba(0,255,255,0.12); z-index:10; transition:background 0.3s;
+/* Header/Menu */
+header{
+position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+padding:14px 22px;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,255,255,0.12);z-index:10;
 }
-header h1 { color:#00f0ff; font-size:1.25rem; text-shadow:0 0 6px rgba(0,240,255,0.1); }
-nav a { margin-left:18px; color:#8ff; font-weight:600; font-size:0.95rem; transition:color 0.3s, text-shadow 0.3s; }
-nav a:hover { color:#0ff; text-shadow:0 0 6px #0ff; }
-nav a.active { text-decoration:underline; text-shadow:0 0 8px #0ff; }
+header h1{color:#00f0ff;font-size:1.25rem;text-shadow:0 0 6px rgba(0,240,255,0.1);}
+nav{display:flex;align-items:center;justify-content:flex-end;}
+nav a{margin-left:20px;color:#00f0ff;font-weight:600;font-size:0.95rem;position:relative;padding-bottom:4px;transition:all 0.3s ease;}
+nav a.active{color:#ff00ff;font-weight:700;}
+nav a::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:#00f0ff;transform:scaleX(0);transform-origin:bottom right;transition:transform 0.3s ease;}
+nav a:hover::after{transform:scaleX(1);transform-origin:bottom left;}
+nav svg{width:16px;height:16px;margin-right:4px;vertical-align:middle;fill:#00f0ff;transition:all 0.3s ease;}
+nav a:hover svg{fill:#fff;transform:translateY(-2px);}
 
-/* Avatar utilisateur */
-#userAvatar { display:flex; align-items:center; gap:8px; cursor:pointer; }
-#userAvatar img { width:32px; height:32px; border-radius:50%; border:1px solid #0ff; transition: transform 0.3s; }
-#userAvatar span { color:#0ff; font-weight:600; }
-#userAvatar:hover img { transform:scale(1.15); }
-
-/* Container */
-.container { max-width:1100px; margin:110px auto 40px; padding:20px; }
-
-/* Grid */
-.grid { display:grid; grid-template-columns: repeat(3,1fr); gap:18px; align-items:start; transition:all 0.3s ease; }
-@media (max-width:900px) { .grid { grid-template-columns:repeat(1,1fr); } }
+/* Container & grid */
+.container{max-width:1100px;margin:110px auto 40px;padding:20px;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start;}
+@media(max-width:900px){.grid{grid-template-columns:1fr;}}
 
 /* Cards */
-.card {
-  background: linear-gradient(180deg, rgba(15,15,15,0.85), rgba(12,12,12,0.6));
-  border-radius:12px; padding:18px; box-shadow: 0 6px 30px rgba(0,220,255,0.03);
-  border:1px solid rgba(0,255,255,0.06);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,240,255,0.15); }
+.card{background:linear-gradient(180deg,rgba(15,15,15,0.85),rgba(12,12,12,0.6));
+border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(0,220,255,0.03);border:1px solid rgba(0,255,255,0.06);
+transition:transform 0.25s ease,box-shadow 0.25s ease;}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,220,255,0.15);}
 
-.stat { text-align:center; padding:18px 12px; }
-.stat h2 { font-size:2.5rem; color:#00f0ff; margin-bottom:6px; transition:text-shadow 0.5s; }
-.stat h2.glow { text-shadow:0 0 12px #0ff,0 0 24px #0ffaa0; }
+.stat{text-align:center;padding:18px 12px;position:relative;}
+.stat h2{font-size:2.5rem;color:#00f0ff;margin-bottom:6px;transition:all 0.4s ease;}
+.stat p{color:#9fe7ff;font-weight:600;}
 
-.stat p { color:#9fe7ff; font-weight:600; }
+/* Glow effect on update */
+.glow{animation:glowAnim 1s ease-out;}
+@keyframes glowAnim{0%{text-shadow:0 0 2px #00f0ff;}50%{text-shadow:0 0 20px #00f0ff;}100%{text-shadow:0 0 2px #00f0ff;}}
 
-.tracks li { display:flex; justify-content:space-between; align-items:center; padding:10px 8px; border-radius:8px; margin-bottom:8px;
-             background:rgba(0,0,0,0.35); border:1px solid rgba(0,255,255,0.03); transition:background 0.3s; }
-.tracks li img { width:28px; height:28px; border-radius:4px; margin-right:8px; }
-.tracks li span { display:flex; align-items:center; gap:6px; color:#c9ffff; font-weight:500; }
-.tracks li.animated { animation:trackPulse 0.8s ease forwards; }
-@keyframes trackPulse { 0% { transform:scale(1); } 50% { transform:scale(1.05); } 100% { transform:scale(1); } }
+/* Tracks */
+.tracks li{display:flex;justify-content:space-between;padding:10px 8px;border-radius:8px;margin-bottom:8px;
+background:rgba(0,0,0,0.35);border:1px solid rgba(0,255,255,0.03);transition:all 0.3s ease;}
+.tracks li:hover{background:rgba(0,255,255,0.05);transform:translateX(3px);}
+.tracks li strong{color:#c9ffff;transition:all 0.3s ease;}
+.progress{height:6px;background:#00f0ff;border-radius:3px;margin-top:4px;transition:width 0.5s ease;}
 
-pre.json {
-  max-height:240px; overflow:auto; background:#021; padding:12px; border-radius:8px; margin-top:12px;
-  color:#c8fffb; font-size:0.85rem; border:1px solid rgba(0,255,255,0.04);
-  transition:all 0.3s; position:relative;
-}
-pre.json:hover { background:#011; box-shadow:0 0 12px #0ff; cursor:pointer; }
+/* Raw JSON */
+pre.json{max-height:240px;overflow:auto;background:#021;padding:12px;border-radius:8px;margin-top:12px;color:#c8fffb;font-size:0.85rem;border:1px solid rgba(0,255,255,0.04);position:relative;}
+.copyBtn{position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:6px;background:#00f0ff;color:#001;font-weight:700;cursor:pointer;transition:all 0.3s ease;}
+.copyBtn:hover{background:#00ffff;}
 
-.status {
-  position:fixed; right:18px; bottom:18px; padding:10px 14px; border-radius:10px; display:flex; gap:10px; align-items:center;
-  background:linear-gradient(180deg, rgba(0,255,255,0.03), rgba(0,255,255,0.01)); color:#00f0ff; border:1px solid rgba(0,255,255,0.09);
-  font-size:0.92rem; z-index:15; transition:all 0.4s;
-}
-.status.success { border-color: rgba(0,255,0,0.6); color:#8cff8c; background:rgba(0,255,0,0.03); }
-.status.error { border-color: rgba(255,80,80,0.9); color:#ff9b9b; background:rgba(255,0,0,0.03); }
+/* Status */
+.status{position:fixed;right:18px;bottom:18px;padding:10px 14px;border-radius:10px;display:flex;gap:10px;align-items:center;
+background:linear-gradient(180deg, rgba(0,255,255,0.03), rgba(0,255,255,0.01));color:#00f0ff;border:1px solid rgba(0,255,255,0.09);
+font-size:0.92rem;z-index:15;transition:all 0.3s ease;}
+.status.success{border-color:rgba(0,255,0,0.6);color:#8cff8c;background:rgba(0,255,0,0.03);}
+.status.error{border-color:rgba(255,80,80,0.9);color:#ff9b9b;background:rgba(255,0,0,0.03);}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:#00f0ff;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-.spinner {
-  width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,0.12);
-  border-top-color: #00f0ff; animation:spin 1s linear infinite;
-}
-@keyframes spin { to{ transform:rotate(360deg); } }
+/* Footer */
+footer{text-align:center;margin-top:30px;color:#7ff;opacity:0.7;font-size:0.9rem;}
 
-footer { text-align:center; margin-top:30px; color:#7ff; opacity:0.7; font-size:0.9rem; }
-
-.muted { color:#9fc; font-size:0.9rem; opacity:0.8; }
-.label { font-size:0.85rem; color:#9fe; margin-bottom:8px; display:block; }
-
-button#forceBtn {
-  padding:8px 12px;border-radius:8px;border:0;background:#00e0ff;color:#001;cursor:pointer;font-weight:700;
-  transition:all 0.3s;
-}
-button#forceBtn:hover { background:#00ffff; transform:scale(1.05); box-shadow:0 0 12px #0ff; }
+/* Dark mode toggle */
+#darkModeToggle{position:fixed;bottom:18px;left:18px;padding:8px 12px;border-radius:8px;background:#00f0ff;color:#001;font-weight:700;cursor:pointer;transition:all 0.3s ease;}
+#darkModeToggle:hover{background:#00ffff;}
+body.light{background:#f5f5f5;color:#0b0b0d;}
+body.light .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(230,230,230,0.6));border-color:rgba(0,0,0,0.06);}
+body.light nav a{color:#001;}
+body.light nav a:hover svg{fill:#000;}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
 
 <header>
-  <h1>Modix Dashboard</h1>
-  <nav>
-    <a href="#stats" class="active">Stats</a>
-    <a href="#music">Musique</a>
-    <a href="#raw">Raw JSON</a>
-  </nav>
-  <div id="userAvatar">
-    <img src="https://i.pravatar.cc/32" alt="Avatar">
-    <span>Cedmystyx</span>
-  </div>
+<h1>Modix Dashboard</h1>
+<nav>
+  <a href="#stats" class="active"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2z"/></svg>Stats</a>
+  <a href="#music"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>Musique</a>
+  <a href="#raw"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>Raw JSON</a>
+</nav>
 </header>
 
 <main class="container">
-  <div class="grid">
-    <!-- Stat cards -->
-    <div class="card stat">
-      <span class="label">Serveurs</span>
-      <h2 id="servers">0</h2>
-      <p class="muted">Serveurs où le bot est présent</p>
-    </div>
-
-    <div class="card stat">
-      <span class="label">Membres en ligne</span>
-      <h2 id="users">0</h2>
-      <p class="muted">Utilisateurs connectés</p>
-    </div>
-
-    <div class="card">
-      <span class="label">Dernière mise à jour</span>
-      <div id="lastUpdate" class="muted">—</div>
-      <div style="height:6px"></div>
-      <button id="forceBtn">Forcer update</button>
-    </div>
+<div class="grid">
+  <div class="card stat">
+    <span class="label">Serveurs</span>
+    <h2 id="servers">0</h2>
+    <p class="muted">Serveurs où le bot est présent</p>
   </div>
 
-  <section class="card" id="music" style="margin-top:18px">
-    <span class="label">Top Musiques Écoutées</span>
-    <ul class="tracks" id="trackList" style="list-style:none;padding:0;margin:0">
-      <li><span><img src="https://i.pravatar.cc/28?img=1" alt="Track 1">Track 1</span><strong id="track1">0 plays</strong></li>
-      <li><span><img src="https://i.pravatar.cc/28?img=2" alt="Track 2">Track 2</span><strong id="track2">0 plays</strong></li>
-      <li><span><img src="https://i.pravatar.cc/28?img=3" alt="Track 3">Track 3</span><strong id="track3">0 plays</strong></li>
-    </ul>
-  </section>
+  <div class="card stat">
+    <span class="label">Membres en ligne</span>
+    <h2 id="users">0</h2>
+    <p class="muted">Utilisateurs connectés</p>
+  </div>
 
-  <section id="raw" class="card" style="margin-top:18px">
-    <span class="label">JSON reçu (debug)</span>
-    <pre id="rawJson" class="json">Aucune donnée reçue.</pre>
-  </section>
+  <div class="card">
+    <span class="label">Dernière mise à jour</span>
+    <div id="lastUpdate" class="muted">—</div>
+  </div>
+</div>
 
-  <footer>© 2025 Modix — Assure-toi que ton API autorise CORS et HTTPS</footer>
-</main>
+<section style="margin-top:18px" class="card" id="music">
+  <span class="label">Top Musiques Écoutées</span>
+  <ul class="tracks" id="trackList" style="list-style:none;padding:0;margin:0">
+    <li><span>Track 1</span><strong id="track1">0 plays</strong><div class="progress" id="bar1"></div></li>
+    <li><span>Track 2</span><strong id="track2">0 plays</strong><div class="progress" id="bar2"></div></li>
+    <li><span>Track 3</span><strong id="track3">0 plays</strong><div class="progress" id="bar3"></div></li>
+  </ul>
+</section>
 
+<section id="raw" class="card" style="margin-top:18px">
+  <span class="label">JSON reçu (debug)</span>
+  <pre id="rawJson" class="json">Aucune donnée reçue.<div class="copyBtn" id="copyJson">Copier</div></pre>
+</section>
+
+<footer>© 2025 Modix — Immersif & interactif</footer>
 <div id="status" class="status"><div class="spinner"></div>⏳ Connexion...</div>
+<div id="darkModeToggle">Toggle Dark Mode</div>
 
 <script>
-const API_URL = "http://86.216.15.182:22324/stats"; 
-const FETCH_TIMEOUT_MS = 6000;
-const MAX_RETRIES = 5;
-const RETRY_BASE_MS = 1000;
-const UPDATE_INTERVAL_MS = 7000;
+// CONFIG
+const API_URL="http://86.216.15.182:22324/stats";
+const FETCH_TIMEOUT_MS=6000,MAX_RETRIES=5,RETRY_BASE_MS=1000,UPDATE_INTERVAL_MS=7000;
 
-const statusEl = document.getElementById("status");
-const serversEl = document.getElementById("servers");
-const usersEl = document.getElementById("users");
-const trackEls = [
-  { count: document.getElementById("track1"), li: document.querySelector("#trackList li:nth-child(1)") },
-  { count: document.getElementById("track2"), li: document.querySelector("#trackList li:nth-child(2)") },
-  { count: document.getElementById("track3"), li: document.querySelector("#trackList li:nth-child(3)") }
-];
-const rawJsonEl = document.getElementById("rawJson");
-const lastUpdateEl = document.getElementById("lastUpdate");
-const forceBtn = document.getElementById("forceBtn");
+// Elements
+const statusEl=document.getElementById("status"),serversEl=document.getElementById("servers"),usersEl=document.getElementById("users"),
+track1El=document.getElementById("track1"),track2El=document.getElementById("track2"),track3El=document.getElementById("track3"),
+bar1=document.getElementById("bar1"),bar2=document.getElementById("bar2"),bar3=document.getElementById("bar3"),
+rawJsonEl=document.getElementById("rawJson"),lastUpdateEl=document.getElementById("lastUpdate"),copyJsonBtn=document.getElementById("copyJson"),
+darkToggle=document.getElementById("darkModeToggle");
 
-let retryCount = 0;
-let nextTimeout = UPDATE_INTERVAL_MS;
+let retryCount=0,nextTimeout=UPDATE_INTERVAL_MS;
 
-// Fetch with timeout
-async function fetchWithTimeout(url, timeoutMs = FETCH_TIMEOUT_MS) {
-  const controller = new AbortController();
-  const signal = controller.signal;
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try { const res = await fetch(url, { signal }); clearTimeout(timer); return res; } 
-  catch(err){ clearTimeout(timer); throw err; }
+// Fetch avec timeout
+async function fetchWithTimeout(url,timeoutMs=FETCH_TIMEOUT_MS){
+  const controller=new AbortController(),signal=controller.signal;
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{const res=await fetch(url,{signal});clearTimeout(timer);return res;}
+  catch(err){clearTimeout(timer);throw err;}
 }
 
-// Status UI helpers
-function setStatusLoading(text="Connexion...") { statusEl.className="status"; statusEl.innerHTML='<div class="spinner"></div>⏳ '+text; }
-function setStatusSuccess(text="Connecté") { statusEl.className="status success"; statusEl.innerHTML='✅ '+text; }
-function setStatusError(text="Erreur") { statusEl.className="status error"; statusEl.innerHTML='✗ '+text; }
+// Status UI
+function setStatusLoading(text="Connexion..."){statusEl.className="status";statusEl.innerHTML='<div class="spinner"></div>⏳ '+text;}
+function setStatusSuccess(text="Connecté"){statusEl.className="status success";statusEl.innerHTML='✅ '+text;}
+function setStatusError(text="Erreur de connexion"){statusEl.className="status error";statusEl.innerHTML='✗ '+text;}
 
-// Animate numbers smoothly with easing and glow
-function animateValue(el, start, end, duration=800) {
+// Animate numbers
+function animateValue(el,start,end,duration=800){
   el=(typeof el==="string")?document.getElementById(el):el;
-  let startTime=null;
-  function step(timestamp){
-    if(!startTime) startTime=timestamp;
-    const progress=Math.min((timestamp-startTime)/duration,1);
-    const value=Math.floor(start+(end-start)*easeOutCubic(progress));
-    el.textContent=value;
-    if(progress<1){ requestAnimationFrame(step); } else { el.textContent=end; el.classList.add("glow"); setTimeout(()=>el.classList.remove("glow"),500);}
-  }
-  requestAnimationFrame(step);
+  const obj=el;
+  start=Number(start)||0;end=Number(end)||0;
+  const range=end-start;if(range===0){obj.textContent=end;return;}
+  const stepTime=Math.max(Math.floor(duration/Math.abs(range)),10);
+  let current=start;const increment=range>0?1:-1;
+  const timer=setInterval(()=>{
+    current+=increment;obj.textContent=current;
+    if(current===end){obj.classList.add('glow');setTimeout(()=>obj.classList.remove('glow'),1000);clearInterval(timer);}
+  },stepTime);
 }
-function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
 
 // Apply data
 function applyData(data){
-  animateValue(serversEl, parseInt(serversEl.textContent||"0"), data.servers||0);
-  animateValue(usersEl, parseInt(usersEl.textContent||"0"), data.users||0);
-  
+  const servers=data.servers||0,users=data.users||0;
+  animateValue(serversEl,parseInt(serversEl.textContent||"0"),servers,900);
+  animateValue(usersEl,parseInt(usersEl.textContent||"0"),users,900);
+
   if(data.top_tracks){
-    trackEls.forEach((t,key)=>{
-      const newVal = data.top_tracks[`track${key+1}`]||0;
-      animateValue(t.count, parseInt(t.count.textContent)||0, newVal);
-      t.li.classList.add("animated");
-      setTimeout(()=>t.li.classList.remove("animated"),800);
-    });
+    track1El.textContent=(data.top_tracks.track1||0)+' plays';
+    track2El.textContent=(data.top_tracks.track2||0)+' plays';
+    track3El.textContent=(data.top_tracks.track3||0)+' plays';
+    const maxPlays=Math.max(data.top_tracks.track1||0,data.top_tracks.track2||0,data.top_tracks.track3||0,1);
+    bar1.style.width=((data.top_tracks.track1||0)/maxPlays*100)+'%';
+    bar2.style.width=((data.top_tracks.track2||0)/maxPlays*100)+'%';
+    bar3.style.width=((data.top_tracks.track3||0)/maxPlays*100)+'%';
   }
 
-  rawJsonEl.textContent = JSON.stringify(data,null,2);
-  lastUpdateEl.textContent = new Date().toLocaleString();
+  rawJsonEl.textContent=JSON.stringify(data,null,2);
+  lastUpdateEl.textContent=new Date().toLocaleString();
 }
 
-// Main update loop
+// Update loop
 async function updateLoop(){
   setStatusLoading("Récupération...");
   try{
-    const res = await fetchWithTimeout(API_URL, FETCH_TIMEOUT_MS);
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const data = await res.json();
-    retryCount=0; nextTimeout=UPDATE_INTERVAL_MS;
+    const res=await fetchWithTimeout(API_URL,FETCH_TIMEOUT_MS);
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const data=await res.json();
+    retryCount=0;nextTimeout=UPDATE_INTERVAL_MS;
     applyData(data);
     setStatusSuccess("Connecté — dernière mise à jour affichée");
     setTimeout(updateLoop,nextTimeout);
-  } catch(err){
+  }catch(err){
     console.warn("Fetch error:",err);
     retryCount++;
     setStatusError(`Erreur (${retryCount}/${MAX_RETRIES})`);
-    nextTimeout=Math.min(30000, RETRY_BASE_MS*Math.pow(2,retryCount));
-    if(retryCount>=MAX_RETRIES){ setStatusError("Echec répété — nouvelle tentative dans 30s"); nextTimeout=30000; retryCount=0; }
+    nextTimeout=Math.min(30000,RETRY_BASE_MS*Math.pow(2,retryCount));
+    if(retryCount>=MAX_RETRIES){setStatusError("Echec répété — nouvelle tentative dans 30s");nextTimeout=30000;retryCount=0;}
     setTimeout(updateLoop,nextTimeout);
   }
 }
+updateLoop();
 
-// Force update button
-forceBtn.addEventListener("click",()=>{
-  forceBtn.style.transform="scale(0.95)";
-  setTimeout(()=>forceBtn.style.transform="scale(1)",150);
-  retryCount=0; nextTimeout=UPDATE_INTERVAL_MS; updateLoop();
-});
+// Copy JSON
+copyJsonBtn.addEventListener("click",()=>{navigator.clipboard.writeText(rawJsonEl.textContent);alert("JSON copié!");});
 
-// Stars Canvas immersive
+// Dark mode
+darkToggle.addEventListener("click",()=>{document.body.classList.toggle("light");});
+
+// Canvas stars
 (function starsCanvas(){
-  const canvas=document.getElementById("stars");
-  const ctx=canvas.getContext("2d");
-  let w=canvas.width=innerWidth, h=canvas.height=innerHeight;
-  const N=Math.round((w*h)/50000);
-  const stars=Array.from({length:Math.max(60,N)},()=>({
-    x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.6+0.2,
-    vx:(Math.random()-0.5)*0.15, vy:(Math.random()-0.5)*0.15,
-    a:Math.random()*0.8+0.2
-  }));
-  window.addEventListener("resize",()=>{ w=canvas.width=innerWidth; h=canvas.height=innerHeight; });
-
-  document.addEventListener("mousemove",(e)=>{
-    const cx=e.clientX/w-0.5, cy=e.clientY/h-0.5;
-    stars.forEach(s=>{ s.x+=cx*0.3; s.y+=cy*0.3; });
-  });
-
+  const canvas=document.getElementById("stars"),ctx=canvas.getContext("2d");
+  let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
+  const N=Math.round((w*h)/50000),stars=Array.from({length:Math.max(60,N)},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+0.2,vx:(Math.random()-0.5)*0.1,vy:(Math.random()-0.5)*0.1,a:Math.random()*0.8+0.2}));
+  window.addEventListener("resize",()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;});
+  window.addEventListener("mousemove",(e)=>{const mx=(e.clientX-w/2)/50,my=(e.clientY-h/2)/50;stars.forEach(s=>{s.x+=mx*0.01;s.y+=my*0.01;});});
   function step(){
     ctx.clearRect(0,0,w,h);
     stars.forEach(s=>{
-      ctx.globalAlpha=s.a;
-      ctx.beginPath();
-      ctx.fillStyle="#00f0ff";
-      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fill();
-      s.x+=s.vx; s.y+=s.vy;
-      if(s.x<0)s.x=w; if(s.x>w)s.x=0;
-      if(s.y<0)s.y=h; if(s.y>h)s.y=0;
+      ctx.globalAlpha=s.a;ctx.beginPath();ctx.fillStyle="#00f0ff";ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+      s.x+=s.vx;s.y+=s.vy;if(s.x<0)s.x=w;if(s.x>w)s.x=0;if(s.y<0)s.y=h;if(s.y>h)s.y=0;
     });
+    if(Math.random()<0.002){const s={x:Math.random()*w,y:0,r:2+Math.random()*2,vx:0,vy:2, a:1};stars.push(s);setTimeout(()=>{stars.splice(stars.indexOf(s),1)},2000);}
     requestAnimationFrame(step);
   }
   step();
 })();
-
-// Initial update
-updateLoop();
 </script>
 </body>
 </html>
