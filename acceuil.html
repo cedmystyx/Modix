@@ -81,6 +81,21 @@
   }
   .cmd-card:hover { background: rgba(0,255,255,0.1); transform:translateX(5px); }
 
+  /* ====== Status ====== */
+  .status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #0ff;
+    font-size: 12px;
+    color: #0ff;
+  }
+  .status.error { border-color: #f00; color: #f00; background: rgba(255,0,0,0.1); }
+  .status.success { border-color: #0f0; color: #0f0; background: rgba(0,255,0,0.1); }
+
 </style>
 </head>
 <body>
@@ -102,16 +117,12 @@
   <!-- ====== Stats ====== -->
   <section id="stats" class="stats">
     <div class="stat-card">
-      <h2 id="servers">2</h2>
-      <p>Serveurs en ligne</p>
+      <h2 id="servers">0</h2>
+      <p>Serveurs Discord</p>
     </div>
     <div class="stat-card">
       <h2 id="users">0</h2>
-      <p>Utilisateurs actifs</p>
-    </div>
-    <div class="stat-card">
-      <h2 id="cmds">500</h2>
-      <p>Commandes utilisées</p>
+      <p>Membres en ligne</p>
     </div>
   </section>
 
@@ -144,26 +155,73 @@
 
 </div>
 
+<!-- Status de connexion -->
+<div class="status" id="status">⏳ Connexion...</div>
+
 <script>
+// Configuration
+const API_URL = "http://fi5.bot-hosting.net:22324/stats";
+const UPDATE_INTERVAL = 5000; // 5 secondes
+
+// Fonction pour récupérer les stats
 async function fetchStats() {
+  const statusEl = document.getElementById("status");
+  
   try {
-    const res = await fetch("http://fi5.bot-hosting.net:22324/stats");
+    const res = await fetch(API_URL);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
 
-    document.getElementById("servers").textContent = data.servers;
-    document.getElementById("users").textContent = data.users;
-    document.getElementById("cmds").textContent = data.commands_used;
+    // Mise à jour des stats principales
+    document.getElementById("servers").textContent = data.servers || 0;
+    document.getElementById("users").textContent = data.users || 0;
 
-    document.getElementById("track1").textContent = data.top_tracks.track1 + " plays";
-    document.getElementById("track2").textContent = data.top_tracks.track2 + " plays";
-    document.getElementById("track3").textContent = data.top_tracks.track3 + " plays";
+    // Mise à jour des top tracks
+    if (data.top_tracks) {
+      document.getElementById("track1").textContent = (data.top_tracks.track1 || 0) + " plays";
+      document.getElementById("track2").textContent = (data.top_tracks.track2 || 0) + " plays";
+      document.getElementById("track3").textContent = (data.top_tracks.track3 || 0) + " plays";
+    }
+
+    // Status succès
+    statusEl.textContent = "✓ Connecté";
+    statusEl.className = "status success";
+    
   } catch (err) {
-    console.error("Erreur fetch stats :", err);
+    console.error("Erreur lors de la récupération des stats :", err);
+    
+    // Status erreur
+    statusEl.textContent = "✗ Erreur de connexion";
+    statusEl.className = "status error";
   }
 }
 
+// Lancement initial
 fetchStats();
-setInterval(fetchStats, 5000);
+
+// Mise à jour automatique
+setInterval(fetchStats, UPDATE_INTERVAL);
+
+// Animation des nombres (effet compteur)
+function animateValue(id, start, end, duration) {
+  const obj = document.getElementById(id);
+  const range = end - start;
+  const increment = end > start ? 1 : -1;
+  const stepTime = Math.abs(Math.floor(duration / range));
+  let current = start;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    obj.textContent = current;
+    if (current === end) {
+      clearInterval(timer);
+    }
+  }, stepTime);
+}
 </script>
 
 </body>
